@@ -5,7 +5,7 @@ import PageHead from "../../src/components/Helpers/PageHead";
 function Index() {
   return (
     <>
-      <PageHead title="Shopus | Dashboard" />
+      <PageHead title="OUI | Dashboard" />
       <Layout childrenClasses="pt-0 pb-0">
         <Profile />
       </Layout>

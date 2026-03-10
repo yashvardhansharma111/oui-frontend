@@ -5,7 +5,7 @@ import PageHead from "../src/components/Helpers/PageHead";
 export default function login() {
   return (
     <>
-      <PageHead title="Shopus | Login" />
+      <PageHead title="OUI | Login" />
       <Login />
     </>
   );

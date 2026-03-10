@@ -13,7 +13,7 @@ function sellersProductsPage(data) {
   };
   return (
     <>
-      <PageHead title="Shopus | products" />
+      <PageHead title="OUI | products" />
       <AllProductPage
         response={data}
         sellerInfo={sellerInfo ? sellerInfo : null}

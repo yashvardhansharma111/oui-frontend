@@ -1,7 +1,7 @@
 {
-  "name": "Shopus",
-  "short_name": "Shopus",
-  "description": "Shopus progressive web app",
+  "name": "OUI",
+  "short_name": "OUI",
+  "description": "OUI progressive web app",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",

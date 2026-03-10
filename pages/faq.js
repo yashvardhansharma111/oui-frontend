@@ -5,7 +5,7 @@ import PageHead from "../src/components/Helpers/PageHead";
 export default function faqPage({ data }) {
   return (
     <>
-      <PageHead title="Shopus | FAQ" />
+      <PageHead title="OUI | FAQ" />
       <Faq datas={data} />
     </>
   );
