@@ -19,12 +19,7 @@ function VerifyWidget({ redirect = true, verifyActionPopup }) {
   const doVerify = async () => {
     setLoading(true);
     await apiRequest
-      .verification(
-        {
-          email: location.query.email,
-        },
-        otp
-      )
+      .verification(otp)
       .then((res) => {
         setLoading(false);
         if (res) {

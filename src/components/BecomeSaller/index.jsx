@@ -82,7 +82,7 @@ function BecomeSaller() {
       formData.append("address", shopAddress);
       formData.append("open_at", "10.00AM");
       formData.append("closed_at", "10.00PM");
-      formData.append("agree_terms_condition", checked);
+      formData.append("agree_terms_condition", checked ? 1 : 0);
       formData.append("logo", uploadLogo);
       const options = {
         onUploadProgress: (progressEvent) => {

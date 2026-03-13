@@ -8,6 +8,56 @@ const instance = axios.create({
   "X-Requested-With": 'XMLHttpRequest'
   },
 });
+
+if (process.env.NODE_ENV !== "production") {
+  try {
+    console.info("[apiRequest] baseURL:", instance.defaults.baseURL);
+  } catch (e) {
+    // ignore
+  }
+
+  instance.interceptors.request.use(
+    (config) => {
+      const url = config && config.url ? String(config.url) : "";
+      if (url.includes("store-login") || url.includes("store-register")) {
+        console.debug("[apiRequest] request", {
+          method: config.method,
+          baseURL: config.baseURL,
+          url: config.url,
+          data: config.data,
+        });
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  instance.interceptors.response.use(
+    (response) => {
+      const url = response && response.config && response.config.url ? String(response.config.url) : "";
+      if (url.includes("store-login") || url.includes("store-register")) {
+        console.debug("[apiRequest] response", {
+          url: response.config.url,
+          status: response.status,
+          data: response.data,
+        });
+      }
+      return response;
+    },
+    (error) => {
+      const url =
+        error && error.config && error.config.url ? String(error.config.url) : "";
+      if (url.includes("store-login") || url.includes("store-register")) {
+        console.debug("[apiRequest] response error", {
+          url: error.config && error.config.url,
+          status: error.response && error.response.status,
+          data: error.response && error.response.data,
+        });
+      }
+      return Promise.reject(error);
+    }
+  );
+}
 export default {
   //authentication
   signup: (data) =>
@@ -27,11 +77,10 @@ export default {
       method: "get",
       url: `user/logout?token=${token}`,
     }),
-  verification: (data, otp) =>
+  verification: (token) =>
     instance({
       method: "GET",
-      url: `user-verification/${otp}`,
-      data,
+      url: `user-verification/${token}`,
     }),
   resend: (data) =>
     instance({

@@ -64,11 +64,22 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
   };
   const doLogin = async () => {
     setLoading(true);
+
+    const recaptchaResponse =
+      typeof window !== "undefined" ? window.localStorage.getItem("recaptcha") : null;
+    const payload = {
+      email: email,
+      password: password,
+      ...(recaptchaResponse ? { "g-recaptcha-response": recaptchaResponse } : {}),
+    };
+
+    console.debug("[LoginWidget] login payload", {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}api/store-login`,
+      payload,
+    });
+
     await apiRequest
-      .login({
-        email: email,
-        password: password,
-      })
+      .login(payload)
       .then((res) => {
         setLoading(false);
         toast.success(langCntnt && langCntnt.Login_Successfully);
@@ -98,10 +109,24 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
       .catch((err) => {
         setLoading(false);
         if (err.response) {
-          if (
-            err.response.data.notification ===
-            "Please verify your acount. If you didn't get OTP, please resend your OTP and verify"
-          ) {
+          console.error("[store-login] failed", {
+            status: err.response.status,
+            data: err.response.data,
+          });
+
+          const backendNotification =
+            err.response.data &&
+            (err.response.data.notification || err.response.data.message);
+          const backendErrors = err.response.data && err.response.data.errors;
+          const normalizedMessage =
+            (backendNotification && String(backendNotification)) || "";
+
+          const isUnverified =
+            normalizedMessage.toLowerCase().includes("verify") &&
+            (normalizedMessage.toLowerCase().includes("otp") ||
+              normalizedMessage.toLowerCase().includes("email"));
+
+          if (isUnverified) {
             toast.warn(
               <SEND
                 des={
@@ -118,7 +143,24 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
               }
             );
           } else {
-            toast.error(langCntnt && langCntnt.Invalid_Credentials);
+            if (backendErrors && typeof backendErrors === "object") {
+              const firstKey = Object.keys(backendErrors)[0];
+              const firstError =
+                firstKey && backendErrors[firstKey] && backendErrors[firstKey][0]
+                  ? backendErrors[firstKey][0]
+                  : null;
+              if (firstError) {
+                toast.error(firstError);
+              } else if (backendNotification) {
+                toast.error(backendNotification);
+              } else {
+                toast.error(langCntnt && langCntnt.Invalid_Credentials);
+              }
+            } else if (backendNotification) {
+              toast.error(backendNotification);
+            } else {
+              toast.error(langCntnt && langCntnt.Invalid_Credentials);
+            }
           }
         } else {
           return false;
