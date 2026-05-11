@@ -118,7 +118,7 @@ export default function ProductCardStyleOne({ datas }) {
     }
   };
   // cart
-  const varients = datas && datas.variants.length > 0 && datas.variants;
+  const varients = datas && datas.variants && datas.variants.length > 0 && datas.variants;
   const [getFirstVarients, setFirstVarients] = useState(
     varients && varients.map((v) => v.active_variant_items[0])
   );
